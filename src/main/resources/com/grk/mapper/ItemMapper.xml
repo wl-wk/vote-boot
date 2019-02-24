@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.grk.dao.ItemDao">
+    <insert id="insertItem">
+        insert into vote_item values
+        <foreach collection="voIds" item="voId" separator=",">
+            (0,#{voId},#{vsId},#{uid})
+        </foreach>
+    </insert>
+
+    <select id="selectCountByVoid" resultType="java.lang.Integer">
+      select count(*) from vote_item where vs_id = #{vsId} and vu_user_id = #{uid}
+    </select>
+</mapper>

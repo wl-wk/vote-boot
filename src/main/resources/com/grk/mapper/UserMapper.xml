@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.grk.dao.UserDao">
+    <resultMap id="result_User_Map" type="User">
+        <id column="vu_user_id" property="vuUserId"/>
+        <result column="vu_user_name" property="vuUserName"/>
+        <result column="vu_password" property="vuPassword"/>
+        <result column="vu_status" property="vuStatus"/>
+    </resultMap>
+
+    <sql id="vote_user_Column">
+        vote_user.vu_user_id as vu_user_id
+        ,vote_user.vu_user_name as vu_user_name
+        ,vote_user.vu_password as vu_password
+        ,vote_user.vu_status as vu_status
+    </sql>
+
+    <select id="selectUserByUsername" parameterType="java.lang.String" resultMap="result_User_Map">
+        select
+        <include refid="vote_user_Column"/>
+        from vote_user
+        where vote_user.vu_user_name = #{username}
+    </select>
+
+    <insert id="insertUser" parameterType="User">
+        <selectKey keyProperty="vuUserId" resultType="java.lang.Integer" order="BEFORE">
+            select max(vu_user_id) + 1 as vuUserId from vote_user
+        </selectKey>
+        insert into vote_user values(#{vuUserId},#{vuUserName},#{vuPassword},#{vuStatus})
+    </insert>
+
+</mapper>

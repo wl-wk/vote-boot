@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.grk.dao.SubjectDao">
+
+
+    <resultMap id="SubjectMap" type="Subject">
+        <id column="vs_id" property="vsId"/>
+        <result property="vsTitle" column="vs_title"></result>
+        <result property="vsType" column="vs_type"></result>
+        <collection property="children" ofType="Option">
+            <id column="vo_id" property="voId"></id>
+            <result column="vo_option" property="voOption"></result>
+        </collection>
+    </resultMap>
+    <select id="selectAll" resultMap="SubjectMap">
+         select vs.vs_id,vs.vs_title,vs.vs_type,vo.vo_id,vo.vo_option from vote_subject vs left join vote_option vo on vs.vs_id = vo.vs_id
+    </select>
+
+
+    <select id="selectCountSubject" resultType="Subject">
+        select vs.vs_id as vsId,vs.vs_title as vsTitle,count(vo.vo_id) as count from vote_subject vs left join
+        vote_option vo on vs.vs_id = vo.vs_id
+        <if test="keywords!=null">
+            where vs.vs_title like '%${keywords}%'
+        </if>
+        GROUP BY vs.vs_id
+    </select>
+
+    <select id="selectCountVote" resultType="Subject">
+        select t1.vs_id as vsId,count(t1.vu_user_id) as count from
+        (select DISTINCT vs.vs_id, vi.vu_user_id from vote_subject vs left join vote_item vi on vs.vs_id = vi.vs_id
+        <if test="keywords!=null">
+            where vs.vs_title like '%${keywords}%'
+        </if>
+        ) t1 GROUP BY t1.vs_id
+    </select>
+
+
+    <insert id="insertSubject">
+        <selectKey order="BEFORE" keyProperty="vsId" resultType="java.lang.Integer">
+            select max(vs_id) + 1 as vsId from vote_subject
+        </selectKey>
+        insert into vote_subject values (#{vsId},#{vsTitle},#{vsType})
+    </insert>
+
+    <select id="selectSubjectById" parameterType="java.lang.Integer" resultMap="SubjectMap">
+      select vs.vs_id,vs.vs_title,vs.vs_type,vo.vo_id,vo.vo_option from vote_subject vs left join vote_option vo on vs.vs_id = vo.vs_id
+      where vs.vs_id = #{id}
+
+    </select>
+
+    <select id="selectSubjectCount" resultType="Subject" parameterType="java.lang.Integer">
+           select t1.vs_id as vsId,count(t1.vu_user_id) as count from
+           (select DISTINCT vs.vs_id, vi.vu_user_id from vote_subject vs left join vote_item vi on vs.vs_id = vi.vs_id where vs.vs_id =#{id} ) t1 GROUP BY t1.vs_id
+    </select>
+
+
+    <select id="selectById" resultType="Option" parameterType="java.lang.Integer">
+        select vo.vo_id as voId,vo.vo_option as voOption,count(vi.vi_id) as count from vote_option vo left join vote_item vi on vo.vo_id = vi.vo_id
+        where vo.vs_id = #{id}
+        GROUP BY vo.vo_id,vo.vo_option
+
+    </select>
+
+    <select id="selectVoteCountById" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+
+        select count(*) from vote_item where vs_id = #{id}
+    </select>
+
+    <update id="updateSubject" parameterType="Subject">
+        update vote_subject
+        <set>
+            <if test="vsTitle!=null and !vsTitle.equals('')">
+                vs_title = #{vsTitle},
+            </if>
+            vs_type = #{vsType}
+        </set>
+        where vs_id = #{vsId}
+    </update>
+
+
+</mapper>
