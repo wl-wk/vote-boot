@@ -9,11 +9,10 @@
     <title>投票列表</title>
     <link type="text/css" rel="stylesheet" href="css/style.css"/>
     <script type="text/javascript" src="/js/jquery-1.8.3.js"></script>
-    <jsp:include page="/comm/comm_jQueryUI_js.jsp"/>
+    <jsp:include page="comm/comm_jQueryUI_js.jsp"/>
     <script type="text/javascript" src="js/j.js"></script>
-    <jsp:include page="/comm/comm_easyUI_js.jsp"/>
-    <%--
-    --%>
+    <jsp:include page="comm/comm_easyUI_js.jsp"/>
+
     <script type="text/javascript" src="/js/e.js"></script>
     <script type="text/javascript">
         $(function () {
